@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 19:22:58 2019
+AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 19:41:19 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -695,7 +695,7 @@ EQU  ACIaddr      0000002e
 EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
-CSEG reset        00000154
+CSEG reset        0000014d
 CSEG handle_INT0  00000120
 CSEG handle_INT2  000000f8
 CSEG OC1A_Interrupt 000000d3
@@ -718,8 +718,8 @@ EQU  botoesE2     00000004
 EQU  botoesI0     00000002
 EQU  botoesI1     00000001
 EQU  botoesI2     00000000
-EQU  B            00000002
-EQU  A            00000003
+EQU  B            00000003
+EQU  A            00000002
 CSEG disable_transmit_interrupt 0000002a
 CSEG enable_transmit_interrupt 00000032
 CSEG startTimer   0000003a
@@ -754,30 +754,30 @@ CSEG botao_chamar1_in_pressionado 00000110
 CSEG botao_chamar2_in_pressionado 00000113
 CSEG botao_abrir_pressionado 00000116
 CSEG end_handle_int2 0000011d
-CSEG botao_fechar_pressionado 00000147
+CSEG botao_fechar_pressionado 00000140
 CSEG botao_chamar0_ext_pressionado 00000135
-CSEG botao_chamar1_ext_pressionado 0000013b
-CSEG botao_chamar2_ext_pressionado 00000141
-CSEG end_handle_int0 00000151
+CSEG botao_chamar1_ext_pressionado 00000138
+CSEG botao_chamar2_ext_pressionado 0000013d
+CSEG end_handle_int0 0000014a
 EQU  UBRRvalue    00000067
 EQU  PRESCALE_DIV 00000100
 EQU  TOP          0000f424
-CSEG main         00000198
-CSEG main_parado  0000019d
-CSEG main_parado_2 000001a7
-CSEG main_parado_1 000001c3
-CSEG main_parado_0_GO 000001a5
-CSEG default      00000208
-CSEG main_parado_0 000001e7
-CSEG main_parado_2_E2_I2 000001bb
-CSEG main_parado_2_RESTO 000001c0
-CSEG main_parado_1_I1 000001d7
-CSEG main_parado_1_E2_I2 000001dc
-CSEG main_parado_1_E1 000001df
-CSEG main_parado_1_E0_I0 000001e4
-CSEG main_parado_0_I0 000001fb
-CSEG main_parado_0_E2_I2_E1_I1 00000200
-CSEG main_parado_0_E0 00000203
-CSEG default_porta_fechada 0000020b
-CSEG main_go      00000214
-CSEG default_porta_fechada_destino_diff_andar 0000020d
+CSEG main         00000191
+CSEG main_parado  00000196
+CSEG main_parado_2 000001a0
+CSEG main_parado_1 000001bc
+CSEG main_parado_0_GO 0000019e
+CSEG default      00000201
+CSEG main_parado_0 000001e0
+CSEG main_parado_2_E2_I2 000001b4
+CSEG main_parado_2_RESTO 000001b9
+CSEG main_parado_1_I1 000001d0
+CSEG main_parado_1_E2_I2 000001d5
+CSEG main_parado_1_E1 000001d8
+CSEG main_parado_1_E0_I0 000001dd
+CSEG main_parado_0_I0 000001f4
+CSEG main_parado_0_E2_I2_E1_I1 000001f9
+CSEG main_parado_0_E0 000001fc
+CSEG default_porta_fechada 00000204
+CSEG main_go      0000020d
+CSEG default_porta_fechada_destino_diff_andar 00000206

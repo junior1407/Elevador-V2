@@ -28,8 +28,8 @@
 .equ botoesI0 = 2
 .equ botoesI1 = 1
 .equ botoesI2 = 0
-.equ B = 2
-.equ A = 3
+.equ B = 3
+.equ A = 2
 
 
 disable_transmit_interrupt:
@@ -285,14 +285,14 @@ handle_INT2:
 	
 	jmp end_handle_int2
 	botao_chamar_I0_pressionado:
+		
 		sbr botoes, ( 1<<botoesI0)
 		jmp end_handle_int2
 	botao_chamar1_in_pressionado:
-		
 		sbr botoes, ( 1<<botoesI1)
 		jmp end_handle_int2
 	botao_chamar2_in_pressionado:
-
+				
 		sbr botoes, ( 1<<botoesI2)
 		jmp end_handle_int2
 	botao_abrir_pressionado:
@@ -325,7 +325,6 @@ handle_INT0:
 	sbrc temp,4
 	jmp botao_chamar2_ext_pressionado
 	jmp end_handle_int0
-
 	botao_chamar0_ext_pressionado:
 		sbr botoes, ( 1<<botoesE0)
 		jmp end_handle_int0
