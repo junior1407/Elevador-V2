@@ -1,0 +1,338 @@
+.org 0x000
+	jmp reset
+.org 0x0006 
+	jmp handle_INT0
+.org 0x000A
+	jmp handle_INT2
+.org OC1Aaddr
+	jmp OC1A_Interrupt
+.def temp = r16
+.def temp2 = r22
+.def temp3 = r24
+.def temp4 = r25
+
+.def andar = r17
+.def botoes = r18
+.def contador = r19
+.def flags = r20  ;  0000  0-0-Estado-Porta
+.equ flagsPortaFechada = 0   ; 1 - Fechada, 0 - Aberta
+.equ flagsEstado = 1 ;  0 - Parado; 1 Em movimento
+.def destino = r21
+.def contadorSerial = r23
+
+
+.equ botoesE0 = 6
+.equ botoesE1 = 5
+.equ botoesE2 = 4
+.equ botoesI0 = 2
+.equ botoesI1 = 1
+.equ botoesI2 = 0
+.equ B = 2
+.equ A = 3
+
+
+startTimer:
+	ldi temp, ((WGM>> 2) << WGM12)|(PRESCALE << CS10)
+	sts TCCR1B, temp ;start counter
+	ret
+
+resetTimer:
+	ldi temp, 0
+	sts TCNT1H, temp
+	sts TCNT1L, temp
+	ldi contador, 0
+	ret
+
+stopTimer:
+	ldi temp, 0
+	sts TCCR1B, temp ;stop counter
+	ret
+
+liga_buzzer:
+	push temp
+	in temp, PORTB
+	sbr temp, (1<< 1) ;Buzzer ON
+	out PORTB, temp
+	pop temp
+	ret
+apaga_buzzer:
+	in temp, PORTB
+	cbr temp, (1<< 1) ;Buzzer OFF
+	out PORTB, temp
+	ret
+
+
+liga_led:
+	in temp, PORTB
+	sbr temp, ( 1<<5) ; Seta pino do led ON
+	out PORTB, temp
+	ret
+
+apaga_led:
+	in temp, PORTB
+	cbr temp, ( 1<<5 ) ; Seta pino do led OFF
+	out PORTB, temp
+	ret
+
+delay20ms:
+	push r22
+	push r21
+	push r20
+	ldi r22,byte3(16*1000*20 / 5)
+	ldi r21, high(16*1000*20 / 5)
+	ldi r20, low(16*1000*20 / 5)
+	subi r20,1
+	sbci r21,0
+	sbci r22,0
+	brcc pc-3
+	pop r20
+	pop r21
+	pop r22
+	ret
+
+
+atualiza_display:
+	in temp, PORTD
+	cpi andar, 0
+	breq atualiza_0
+	cpi andar, 1
+	breq atualiza_1
+	cpi andar, 2
+	breq atualiza_2
+	cpi andar, 3
+	breq atualiza_3
+	jmp end_atualiza
+	atualiza_0:
+		cbr temp, (1 << A) | (1 << B)
+		jmp end_atualiza
+	atualiza_1:
+		cbr temp, (1 << B)
+		sbr temp, (1 << A)
+		jmp end_atualiza
+	atualiza_2:
+		cbr temp, (1 << A)
+		sbr temp, (1 << B)
+		jmp end_atualiza
+	atualiza_3:
+		sbr temp, (1 << A)
+		sbr temp, (1 << B)
+		jmp end_atualiza
+	; PORTD = xxxxABxx
+	end_atualiza:
+	out PORTD, temp
+	ret
+	; A = 3 PD3
+	; B = 2 PD2
+
+abre:
+	call resetTimer
+	cbr flags, (1 <<flagsPortaFechada)
+	call liga_led
+	call startTimer
+	ret
+
+fecha:
+	sbr flags, (1 <<flagsPortaFechada)
+	call apaga_buzzer
+	call apaga_led
+	call stopTimer
+	call resetTimer
+	ret
+
+
+OC1A_Interrupt:
+cli
+	subi contador, -1
+	sbrc flags, flagsEstado
+	jmp timer_estado_em_movimento
+	timer_estado_parado:
+		sbrc flags, flagsPortaFechada
+		jmp timer_end
+		cpi contador, 5
+		breq contador_5
+		cpi contador, 10
+		breq contador_10
+		jmp timer_end
+    contador_5:
+		call liga_buzzer
+		jmp timer_end
+	contador_10:
+		call apaga_buzzer
+		call apaga_led
+		sbr flags, (1 << flagsPortaFechada) 
+		call stopTimer
+		call resetTimer
+		jmp timer_end
+	timer_estado_em_movimento:
+		cpi contador, 3
+		breq contador_3
+		jmp timer_end
+	contador_3:
+		mov andar, destino
+		cbr flags, (1 << flagsEstado)
+		call stopTimer
+		call resetTimer
+		jmp timer_end
+	timer_end:
+	sei
+	reti
+	
+handle_INT2:
+	cli 
+	call delay20ms;Debouncing
+	;call delay20ms;
+	;0 do Elevador = PD4 ; PCINT20
+	;1 do Elevador = PD5 ; PCINT21
+	;2 do Elevador = PD6 ; PCINT22
+	;Abrir do Elevador = PD7; PCINT23
+	in temp, PIND
+	
+	
+	sbrc temp,4 
+	jmp botao_chamar_I0_pressionado
+	
+	sbrc temp,5
+	jmp botao_chamar1_in_pressionado
+	
+	sbrc temp,6
+	jmp botao_chamar2_in_pressionado
+	
+
+	sbrc temp,7
+	jmp botao_abrir_pressionado
+	
+	jmp end_handle_int2
+	botao_chamar_I0_pressionado:
+		ldi andar, 0
+		call atualiza_display
+		sbr botoes, ( 1<<botoesI0)
+		jmp end_handle_int2
+	botao_chamar1_in_pressionado:
+		ldi andar, 1
+		call atualiza_display
+		sbr botoes, ( 1<<botoesI1)
+		jmp end_handle_int2
+	botao_chamar2_in_pressionado:
+		ldi andar, 2
+		call atualiza_display
+		sbr botoes, ( 1<<botoesI2)
+		jmp end_handle_int2
+	botao_abrir_pressionado:
+		sbrs flags, flagsEstado
+		call liga_led
+		call abre
+		jmp end_handle_int2
+
+	end_handle_int2:
+	sei
+	reti
+
+
+handle_INT0:
+	cli ; TODO: Só desligar essa interrupção
+	; Fechar do Elevador = PB0; PCINT0
+	; Chamar 0 = PB2; PCINT2
+	; Chamar 1 = PB3; PCINT3 
+	; Chamar 2  = PB4; PCINT4
+	in temp, PINB
+	call delay20ms;Debouncing
+	sbrc temp,0
+	jmp botao_fechar_pressionado
+	sbrc temp,2
+	jmp botao_chamar0_ext_pressionado
+	sbrc temp,3
+	jmp botao_chamar1_ext_pressionado
+	sbrc temp,4
+	jmp botao_chamar2_ext_pressionado
+	jmp end_handle_int0
+
+	botao_chamar0_ext_pressionado:
+		ldi andar, 0
+		call atualiza_display
+		sbr botoes, ( 1<<botoesE0)
+		jmp end_handle_int0
+	botao_chamar1_ext_pressionado:
+		ldi andar, 1
+		call atualiza_display
+		sbr botoes, ( 1<<botoesE1)
+		jmp end_handle_int0
+	botao_chamar2_ext_pressionado:
+		ldi andar, 2
+		call atualiza_display
+		sbr botoes, ( 1<<botoesE2)
+		jmp end_handle_int0
+	botao_fechar_pressionado:
+		call apaga_led
+		jmp end_handle_int0
+
+	end_handle_int0:
+	sei
+	reti
+reset:
+
+	cli
+
+	#define CLOCK 16.0e6 ;clock speed
+	.equ PRESCALE = 0b100 ;/256 prescale
+	.equ PRESCALE_DIV = 256
+
+	#define DELAY 0.5 ;seconds
+	.equ WGM = 0b0100 ;Waveform generation mode: CTC
+	;you must ensure this value is between 0 and 65535
+	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
+	.if TOP > 65535
+	.error "TOP is out of range"
+	.endif
+
+	;On MEGA series, write high byte of 16-bit timer registers first
+	ldi temp, high(TOP) ;initialize compare value (TOP)
+	sts OCR1AH, temp
+	ldi temp, low(TOP)
+	sts OCR1AL, temp
+	ldi temp, ((WGM&0b11) << WGM10) ;lower 2 bits of WGM 
+	sts TCCR1A, temp
+	;upper 2 bits of WGM and clock select
+
+	lds r16, TIMSK1
+	sbr r16, 1 <<OCIE1A
+	sts TIMSK1, r16	
+	
+	
+	
+
+	;CONFIG PORTB E PORTD como entrada(0) e saida(1)
+	ldi temp, 0b00100010
+	out DDRB, temp
+	ldi temp, 0b00001100
+	out DDRD, temp
+
+
+	;Pin change Interrupt (23:16) and (0:7)
+	ldi temp, 0b00000101;
+	sts PCICR, temp
+ 
+	; Enables PCINT 4 TO 0, but 1 (the buzzer).
+	;ldi temp, 0b00011101;
+	ldi temp, 0b11111111
+	;out PCMSK0, temp
+	sts PCMSK0, temp 
+
+	; Enables PCINT 23 TO 20
+	ldi temp, 0b11110000
+	sts PCMSK2, temp 
+	sei
+
+	;Stack initialization
+	ldi temp, low(RAMEND)
+	out SPL, temp
+	ldi temp, high(RAMEND)
+	out SPH, temp
+
+	call stopTimer    ; Timer 
+	call resetTimer   ; Timer = Resetado
+	ldi andar, 0        ; Andar = 0
+	ldi flags, 0b00000001 ; Porta fechada e Parado.
+	call fecha
+
+	main:
+		rjmp PC
