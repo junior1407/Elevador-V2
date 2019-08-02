@@ -34,62 +34,93 @@
 
 
 disable_transmit_interrupt:
+	cli
 	push temp
 	ldi temp, 0
 	sts UCSR0B, temp; 
 	pop temp
+	sei
 	ret
 enable_transmit_interrupt:
+	cli
 	push temp
 	ldi temp, (1<<TXCIE0)|(1 << TXEN0)
 	sts UCSR0B, temp; enable transmit and transmit interrupt
 	pop temp
+	sei
 	ret
 
 startTimer:
+	cli
+	push temp
 	ldi temp, ((WGM>> 2) << WGM12)|(PRESCALE << CS10)
 	sts TCCR1B, temp ;start counter
+	pop temp
+	sei
 	ret
 
 resetTimer:
+	cli
+	push temp
 	ldi temp, 0
 	sts TCNT1H, temp
 	sts TCNT1L, temp
 	ldi contador, 0
+	pop temp
+	sei
 	ret
 
 stopTimer:
+	cli
+	push temp
 	ldi temp, 0
 	sts TCCR1B, temp ;stop counter
+	pop temp
+	sei
 	ret
 
 liga_buzzer:
+	cli
 	push temp
 	in temp, PORTB
 	sbr temp, (1<< 1) ;Buzzer ON
 	out PORTB, temp
 	pop temp
+	sei
 	ret
 apaga_buzzer:
+	cli
+	push temp
 	in temp, PORTB
 	cbr temp, (1<< 1) ;Buzzer OFF
 	out PORTB, temp
+	pop temp
+	sei
 	ret
 
 
 liga_led:
+	cli
+	push temp
 	in temp, PORTB
 	sbr temp, ( 1<<5) ; Seta pino do led ON
 	out PORTB, temp
+	pop temp
+	sei
 	ret
 
 apaga_led:
+	cli
+	push temp
 	in temp, PORTB
 	cbr temp, ( 1<<5 ) ; Seta pino do led OFF
 	out PORTB, temp
+	pop temp
+	sei
 	ret
 
 delay20ms:
+	cli
 	push r22
 	push r21
 	push r20
@@ -103,11 +134,14 @@ delay20ms:
 	pop r20
 	pop r21
 	pop r22
+	sei
 	ret
 
 
 atualiza_display:
-	in temp, PORTD
+	cli
+	push temp2
+	in temp2, PORTD
 	cpi andar, 0
 	breq atualiza_0
 	cpi andar, 1
@@ -118,44 +152,51 @@ atualiza_display:
 	breq atualiza_3
 	jmp end_atualiza
 	atualiza_0:
-		cbr temp, (1 << A) | (1 << B)
+		cbr temp2, (1 << A) | (1 << B)
 		jmp end_atualiza
 	atualiza_1:
-		cbr temp, (1 << B)
-		sbr temp, (1 << A)
+		cbr temp2, (1 << B)
+		sbr temp2, (1 << A)
 		jmp end_atualiza
 	atualiza_2:
-		cbr temp, (1 << A)
-		sbr temp, (1 << B)
+		cbr temp2, (1 << A)
+		sbr temp2, (1 << B)
 		jmp end_atualiza
 	atualiza_3:
-		sbr temp, (1 << A)
-		sbr temp, (1 << B)
+		sbr temp2, (1 << A)
+		sbr temp2, (1 << B)
 		jmp end_atualiza
 	; PORTD = xxxxABxx
 	end_atualiza:
-	out PORTD, temp
+	out PORTD, temp2
+	pop temp2
+	sei
 	ret
 	; A = 3 PD3
 	; B = 2 PD2
 
 abre:
+	cli
 	call resetTimer
 	cbr flags, (1 <<flagsPortaFechada)
 	call liga_led
 	call startTimer
+	sei
 	ret
 
 fecha:
+	cli
 	sbr flags, (1 <<flagsPortaFechada)
 	call apaga_buzzer
 	call apaga_led
 	call stopTimer
 	call resetTimer
+	sei
 	ret
 
 
 USART_TX_Complete:
+reti 
 	ldi temp4, 'A'
 	sts UDR0, temp4
 	reti
@@ -221,19 +262,19 @@ handle_INT2:
 	
 	jmp end_handle_int2
 	botao_chamar_I0_pressionado:
-		ldi andar, 0
+;		ldi andar, 0
 ;		call atualiza_display
 		sbr botoes, ( 1<<botoesI0)
 		jmp end_handle_int2
 	botao_chamar1_in_pressionado:
-		ldi andar, 1
+;		ldi andar, 1
 ;		call atualiza_display
-;		sbr botoes, ( 1<<botoesI1)
+		sbr botoes, ( 1<<botoesI1)
 		jmp end_handle_int2
 	botao_chamar2_in_pressionado:
-		ldi andar, 2
+;		ldi andar, 2
 ;		call atualiza_display
-	;	sbr botoes, ( 1<<botoesI2)
+		sbr botoes, ( 1<<botoesI2)
 		jmp end_handle_int2
 	botao_abrir_pressionado:
 	;	sbrs flags, flagsEstado
@@ -361,17 +402,22 @@ reset:
 	ldi temp, high(RAMEND)
 	out SPH, temp
 
+	ldi botoes, 0
+	
 	call stopTimer    ; Timer 
 	call resetTimer   ; Timer = Resetado
 	ldi andar, 0        ; Andar = 0
+	ldi destino, 0
 	ldi flags, 0b00000001 ; Porta fechada e Parado.
 	call fecha
-	ldi temp4, 'S'
+	ldi temp,0
+	sts PORTD,temp
+	sts portB,temp
 	sei
-	sts UDR0, temp4
+	call delay20ms
+
 	main:
 	call atualiza_display
-	rjmp main
 ;TODO: Ficar printando andar no display usando PIND/B  e PORTD/B
 	; IF flagEstado==1 (Em movimento)
 	sbrc flags, flagsEstado
@@ -392,6 +438,7 @@ reset:
 			rjmp main;
 		if_porta_aberta:
 		if_parado_porta_aberta_ou_fechada:
+		
 			; Switch(andar)
 			cpi andar, 0
 			breq andar_0
