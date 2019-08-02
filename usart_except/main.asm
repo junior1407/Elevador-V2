@@ -12,7 +12,6 @@
 .def temp2 = r22
 .def temp3 = r24
 .def temp4 = r25
-
 .def andar = r17
 .def botoes = r18
 .def contador = r19
@@ -60,12 +59,12 @@ startTimer:
 	ret
 
 resetTimer:
+	ret
 	cli
 	push temp
 	ldi temp, 0
 	sts TCNT1H, temp
 	sts TCNT1L, temp
-	ldi contador, 0
 	pop temp
 	sei
 	ret
@@ -191,56 +190,76 @@ fecha:
 	call apaga_led
 	call stopTimer
 	call resetTimer
+	ldi contador, 0
 	sei
 	ret
 
 
 USART_TX_Complete:
-reti 
-	ldi temp4, 'A'
-	sts UDR0, temp4
+	cpi andar, 2
+	breq tx_2
+	cpi andar, 1
+	breq tx_1	
+	cpi andar, 0
+	breq tx_0
+	reti
+	tx_2: 
+		ldi temp4, '2'
+		sts UDR0, temp4
+		jmp end_usart
+	tx_1:
+		ldi temp4, '1'
+		sts UDR0, temp4
+		jmp end_usart
+	tx_0:
+		ldi temp4, '0'
+		sts UDR0, temp4
+		jmp end_usart
+	end_usart:
+		;jmp disable_transmit_interrupt
 	reti
 
 OC1A_Interrupt:
-cli
+	cli
 	subi contador, -1
 	sbrc flags, flagsEstado
-	jmp timer_estado_em_movimento
-	timer_estado_parado:
-		sbrc flags, flagsPortaFechada
-		jmp timer_end
-		cpi contador, 5
-		breq contador_5
-		cpi contador, 10
-		breq contador_10
-		jmp timer_end
-    contador_5:
-		call liga_buzzer
-		jmp timer_end
-	contador_10:
-		call fecha
-		jmp timer_end
-	timer_estado_em_movimento:
+	jmp time_movimento
+	jmp time_parado
+	time_movimento:
 		cpi contador, 3
-		breq contador_3
-		jmp timer_end
-	contador_3:
+		brne end_time
+		cbr flags, (1<<flagsEstado)
 		mov andar, destino
-		cbr flags, (1 << flagsEstado)
-		call atualiza_display
 		call stopTimer
 		call resetTimer
-		jmp timer_end
-	timer_end:
+		ldi contador, 0
+	;	call atualiza_display
+		jmp end_time
+	time_parado:
+		sbrc flags, flagsPortaFechada
+		jmp end_time
+		cpi contador, 5
+		breq time_parado_aberta_5
+		cpi contador, 10
+		breq time_parado_aberta_10
+		jmp end_time
+
+	time_parado_aberta_5:
+		call liga_buzzer
+		jmp end_time
+	time_parado_aberta_10:
+		call fecha
+		jmp end_time
+	end_time:
 	sei
-	pop r1
-	pop r1
-	jmp main
-	;reti
+	reti
+	
 	
 handle_INT2:
-	cli 
+	push temp
 	in temp, PIND
+	cli 
+	call delay20ms
 ;	call liga_buzzer
 	call delay20ms;Debouncing
 	;call delay20ms;
@@ -266,39 +285,36 @@ handle_INT2:
 	
 	jmp end_handle_int2
 	botao_chamar_I0_pressionado:
-;		ldi andar, 0
-;		call atualiza_display
 		sbr botoes, ( 1<<botoesI0)
 		jmp end_handle_int2
 	botao_chamar1_in_pressionado:
-;		ldi andar, 1
-;		call atualiza_display
+		
 		sbr botoes, ( 1<<botoesI1)
 		jmp end_handle_int2
 	botao_chamar2_in_pressionado:
-;		ldi andar, 2
-;		call atualiza_display
+
 		sbr botoes, ( 1<<botoesI2)
 		jmp end_handle_int2
 	botao_abrir_pressionado:
-	;	sbrs flags, flagsEstado
-		call liga_led
+		sbrc flags, flagsEstado
+		jmp end_handle_int2
 		call abre
 		jmp end_handle_int2
-
 	end_handle_int2:
 	sei
+	pop temp
 	reti
 
 
 handle_INT0:
-	
+	push temp
+	in temp, PINB
 	cli ; TODO: Só desligar essa interrupção
 	; Fechar do Elevador = PB0; PCINT0
 	; Chamar 0 = PB2; PCINT2
 	; Chamar 1 = PB3; PCINT3 
 	; Chamar 2  = PB4; PCINT4
-	in temp, PINB
+	call delay20ms
 	call delay20ms;Debouncing
 	sbrc temp,0
 	jmp botao_fechar_pressionado
@@ -311,27 +327,24 @@ handle_INT0:
 	jmp end_handle_int0
 
 	botao_chamar0_ext_pressionado:
-	;	ldi andar, 0
-	;	call atualiza_display
 		sbr botoes, ( 1<<botoesE0)
 		jmp end_handle_int0
 	botao_chamar1_ext_pressionado:
-	;	ldi andar, 1
-	;	call atualiza_display
 		sbr botoes, ( 1<<botoesE1)
 		jmp end_handle_int0
 	botao_chamar2_ext_pressionado:
-	;	ldi andar, 2
-	;	call atualiza_display
 		sbr botoes, ( 1<<botoesE2)
 		jmp end_handle_int0
 	botao_fechar_pressionado:
-		call apaga_buzzer
-		call apaga_led
+		sbrc flags,flagsEstado
 		jmp end_handle_int0
-
+		sbrc flags, flagsPortaFechada
+		jmp end_handle_int0
+		call fecha
+		jmp end_handle_int0
 	end_handle_int0:
 	sei
+	pop temp
 	reti
 reset:
 
@@ -348,13 +361,13 @@ reset:
 	ldi temp, (3<<UCSZ00)
 	sts UCSR0C, temp
 
-	;call enable_transmit_interrupt
+	call enable_transmit_interrupt
 
 	#define CLOCK 16.0e6 ;clock speed
 	.equ PRESCALE = 0b100 ;/256 prescale
 	.equ PRESCALE_DIV = 256
 
-	#define DELAY 0.5 ;seconds
+	#define DELAY 1 ;seconds
 	.equ WGM = 0b0100 ;Waveform generation mode: CTC
 	;you must ensure this value is between 0 and 65535
 	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
@@ -407,138 +420,136 @@ reset:
 	out SPH, temp
 
 	ldi botoes, 0
-	
+	ldi flags, 0b00000001 ; Porta fechada e Parado.
+
+	ldi temp,0
+	sts PORTD,temp
+	sts portB,temp
+
+	ldi temp2,0
+	ldi temp3,0
+	ldi temp4,0
+	ldi contador, 0
+	ldi contadorSerial,0
+
+
+
+
+	call fecha
 	call stopTimer    ; Timer 
 	call resetTimer   ; Timer = Resetado
 	ldi andar, 0        ; Andar = 0
 	ldi destino, 0
-	ldi flags, 0b00000001 ; Porta fechada e Parado.
-	call fecha
-	ldi temp,0
-	sts PORTD,temp
-	sts portB,temp
+
+
 	sei
 	call delay20ms
-
+	sts UDR0, temp4
 	main:
-;TODO: Ficar printando andar no display usando PIND/B  e PORTD/B
-	; IF flagEstado==1 (Em movimento)
+	call atualiza_display
 	sbrc flags, flagsEstado
-	rjmp estado_em_movimento
-		estado_parado:
-			sbrs flags, flagsPortaFechada ; 
-			rjmp if_porta_aberta
-			if_porta_fechada:
-				cp destino, andar
-				breq if_parado_porta_aberta_ou_fechada
-				if_porta_fechada_destino_diff_atual:
-					sbr flags, (1 << flagsEstado) ; Ativa Estado em Movimento
-					rcall startTimer
-					rjmp if_parado_porta_aberta_ou_fechada	
-
-	rjmp main
-		estado_em_movimento:
-			rjmp main;
-		if_porta_aberta:
-		if_parado_porta_aberta_ou_fechada:
-		
-			; Switch(andar)
-			cpi andar, 0
-			breq andar_0
-			cpi andar, 1
-			breq andar_1
-			cpi andar, 2
-			breq andar_2
-			rjmp main;
-
-andar_0:
-	; if (I0 | E0)
-	; botoes = r18  ;0b  0-E0-E1-E2 0-I0-I1-I2
-	sbrc botoes, botoesI0  ; IF I0==1
-	rjmp andar_0_I0_E0
-	sbrc botoes, botoesE0
-	rjmp andar_0_I0_E0
- 
-	sbrc botoes, botoesI2  ; IF I2==1
-	rjmp andar_0_I2_E2
-	sbrc botoes, botoesE2
-	rjmp andar_0_I2_E2
-
-	sbrc botoes, botoesI1  ; IF I1==1
-	rjmp andar_0_I1_E1
-	sbrc botoes, botoesE1
-	rjmp andar_0_I1_E1
-	rjmp main
-	andar_0_I0_E0:
+	jmp main
+	main_parado:
+		cpi andar, 2
+		breq main_parado_2
+		cpi andar, 1
+		breq main_parado_1
+		cpi andar, 0
+		breq main_parado_0_GO
+		jmp default
+	main_parado_0_GO:
+		jmp main_parado_0
+	main_parado_2:
+		sbrc botoes, botoesE2
+		jmp main_parado_2_E2_I2
+		sbrc botoes, botoesI2
+		jmp main_parado_2_E2_I2
+		sbrc botoes, botoesE1
+		jmp main_parado_2_RESTO
+		sbrc botoes, botoesI1
+		jmp main_parado_2_RESTO
+		sbrc botoes, botoesE0
+		jmp main_parado_2_RESTO
+		sbrc botoes, botoesI0
+		jmp main_parado_2_RESTO
+		jmp default
+	main_parado_2_E2_I2:
 		call abre
-		cbr botoes, (1 << botoesE0)|(1<<botoesI0) ; Dá Clear nos botões E0(bit6) e I0(bit2). 
-		;Produz uma máscara
-		; Fazendo shift em cada posição de BIT.  Depois zera onde é 1.		
-		rjmp main
-	andar_0_I1_E1:
-	andar_0_I2_E2:
+		cbr botoes, (1<<botoesE2)|(1<<botoesI2)
+		jmp default
+	main_parado_2_RESTO:
 		ldi destino, 1
-		rjmp main
-	
-andar_1:
-	; botoes = r18  ;0b  0-E0-E1-E2 0-I0-I1-I2
-	sbrc botoes, botoesI1  ; IF I1==1
-	rjmp andar_1_I1_E1
-	sbrc botoes, botoesE1
-	rjmp andar_1_I1_E1
- 
-	sbrc botoes, botoesI2  ; IF I2==1
-	rjmp andar_1_I2_E2
-	sbrc botoes, botoesE2
-	rjmp andar_1_I2_E2
+		jmp default
+	main_parado_1:
+		sbrc botoes, botoesI1
+		jmp main_parado_1_I1
 
-	sbrc botoes, botoesI0  ; IF I0==1
-	rjmp andar_1_I0_E0
-	sbrc botoes, botoesE0
-	rjmp andar_1_I0_E0
-	rjmp main
+		sbrc botoes, botoesI2
+		jmp main_parado_1_E2_I2
+		sbrc botoes, botoesE2
+		jmp main_parado_1_E2_I2
 
-	andar_1_I1_E1:
+		sbrc botoes, botoesE1
+		jmp main_parado_1_E1
+
+		sbrc botoes, botoesE0
+		jmp main_parado_1_E0_I0
+		sbrc botoes, botoesI0
+		jmp main_parado_1_E0_I0
+		jmp default
+	main_parado_1_I1:
 		call abre
-		ldi temp3, (1 << botoesE1)|(1<<botoesI1)
-		cbr botoes, (1 << botoesE1)|(1<<botoesI1) ; Dá Clear nos botões E1 e I1. 
-		;Produz uma máscara
-		; Fazendo shift em cada posição de BIT.  Depois zera onde é 1.		
-		rjmp main
-	andar_1_I2_E2:
-		ldi destino, 2
-		rjmp main
-	andar_1_I0_E0:
-		ldi destino, 0
-		rjmp main
-
-andar_2:
-	; botoes = r18  ;0b  0-E0-E1-E2 0-I0-I1-I2
-	sbrc botoes, botoesI2  ; IF I2==1
-	rjmp andar_2_I2_E2
-	sbrc botoes, botoesE2
-	rjmp andar_2_I2_E2
- 
-	sbrc botoes, botoesI1  ; IF I2==1
-	rjmp andar_2_I1_E1
-	sbrc botoes, botoesE1
-	rjmp andar_2_I1_E1
-
-	sbrc botoes, botoesI0  ; IF I1==1
-	rjmp andar_2_I0_E0
-	sbrc botoes, botoesE0
-	rjmp andar_2_I0_E0
-	rjmp main
-
-	andar_2_I2_E2:
+		cbr botoes, (1<<botoesI1)
+		jmp default
+	main_parado_1_E2_I2:
+		ldi destino,2
+		jmp default
+	main_parado_1_E1:
 		call abre
-		cbr botoes, (1 << botoesE2)|(1<<botoesI2) ; Dá Clear nos botões E1 e I1. 
-		;Produz uma máscara
-		; Fazendo shift em cada posição de BIT.  Depois zera onde é 1.		
-		rjmp main
-	andar_2_I1_E1:
-	andar_2_I0_E0:
+		cbr botoes, (1<<botoesE1)		
+		jmp default
+	main_parado_1_E0_I0:
+		ldi destino,0
+		jmp default
+	main_parado_0:
+
+		sbrc botoes, botoesI0
+		jmp main_parado_0_I0
+
+		sbrc botoes, botoesI2
+		jmp main_parado_0_E2_I2_E1_I1
+		sbrc botoes, botoesE2
+		jmp main_parado_0_E2_I2_E1_I1
+		sbrc botoes, botoesI1
+		jmp main_parado_0_E2_I2_E1_I1
+		sbrc botoes, botoesE1
+		jmp main_parado_0_E2_I2_E1_I1
+
+		sbrc botoes, botoesE0
+		jmp main_parado_0_E0
+		jmp default
+
+	main_parado_0_I0:
+		call abre
+		cbr botoes, (1<<botoesI0)
+		jmp default
+	main_parado_0_E2_I2_E1_I1:
 		ldi destino, 1
-		rjmp main
-
-	
+		jmp default
+	main_parado_0_E0:
+		call abre
+		cbr botoes, (1<<botoesE0)
+		jmp default
+	default:
+		sbrs flags, flagsPortaFechada
+		jmp main
+		default_porta_fechada:
+			cp destino, andar
+			breq main_go
+			default_porta_fechada_destino_diff_andar:
+				sbr flags, (1<<flagsEstado)
+				call startTimer
+				jmp main
+		jmp main
+	main_go:
+		jmp main
