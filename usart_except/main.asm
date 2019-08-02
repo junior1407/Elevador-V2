@@ -233,7 +233,10 @@ cli
 		jmp timer_end
 	timer_end:
 	sei
-	reti
+	pop r1
+	pop r1
+	jmp main
+	;reti
 	
 handle_INT2:
 	cli 
@@ -308,19 +311,19 @@ handle_INT0:
 	jmp end_handle_int0
 
 	botao_chamar0_ext_pressionado:
-		ldi andar, 0
+	;	ldi andar, 0
 	;	call atualiza_display
-	;	sbr botoes, ( 1<<botoesE0)
+		sbr botoes, ( 1<<botoesE0)
 		jmp end_handle_int0
 	botao_chamar1_ext_pressionado:
-		ldi andar, 1
+	;	ldi andar, 1
 	;	call atualiza_display
-	;	sbr botoes, ( 1<<botoesE1)
+		sbr botoes, ( 1<<botoesE1)
 		jmp end_handle_int0
 	botao_chamar2_ext_pressionado:
-		ldi andar, 2
+	;	ldi andar, 2
 	;	call atualiza_display
-	;	sbr botoes, ( 1<<botoesE2)
+		sbr botoes, ( 1<<botoesE2)
 		jmp end_handle_int0
 	botao_fechar_pressionado:
 		call apaga_buzzer
