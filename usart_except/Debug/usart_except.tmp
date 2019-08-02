@@ -22,9 +22,9 @@
   <FILE>usart_except.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <reset><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>332</LINE></reset>
-  <handle_INT0><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>290</LINE></handle_INT0>
-  <handle_INT2><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>237</LINE></handle_INT2>
+  <reset><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>333</LINE></reset>
+  <handle_INT0><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>291</LINE></handle_INT0>
+  <handle_INT2><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>238</LINE></handle_INT2>
   <OC1A_Interrupt><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>204</LINE></OC1A_Interrupt>
   <USART_TX_Complete><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>198</LINE></USART_TX_Complete>
   <disable_transmit_interrupt><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>36</LINE></disable_transmit_interrupt>
@@ -47,21 +47,21 @@
   <fecha><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>187</LINE></fecha>
   <timer_estado_em_movimento><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>223</LINE></timer_estado_em_movimento>
   <timer_estado_parado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>209</LINE></timer_estado_parado>
-  <timer_end><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>233</LINE></timer_end>
+  <timer_end><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>234</LINE></timer_end>
   <contador_5><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>217</LINE></contador_5>
   <contador_10><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>220</LINE></contador_10>
   <contador_3><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>227</LINE></contador_3>
-  <botao_chamar_I0_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>264</LINE></botao_chamar_I0_pressionado>
-  <botao_chamar1_in_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>269</LINE></botao_chamar1_in_pressionado>
-  <botao_chamar2_in_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>274</LINE></botao_chamar2_in_pressionado>
-  <botao_abrir_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>279</LINE></botao_abrir_pressionado>
-  <end_handle_int2><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>285</LINE></end_handle_int2>
-  <botao_fechar_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>324</LINE></botao_fechar_pressionado>
-  <botao_chamar0_ext_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>309</LINE></botao_chamar0_ext_pressionado>
-  <botao_chamar1_ext_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>314</LINE></botao_chamar1_ext_pressionado>
-  <botao_chamar2_ext_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>319</LINE></botao_chamar2_ext_pressionado>
-  <end_handle_int0><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>329</LINE></end_handle_int0>
-  <main><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>419</LINE></main>
+  <botao_chamar_I0_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>265</LINE></botao_chamar_I0_pressionado>
+  <botao_chamar1_in_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>270</LINE></botao_chamar1_in_pressionado>
+  <botao_chamar2_in_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>275</LINE></botao_chamar2_in_pressionado>
+  <botao_abrir_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>280</LINE></botao_abrir_pressionado>
+  <end_handle_int2><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>286</LINE></end_handle_int2>
+  <botao_fechar_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>325</LINE></botao_fechar_pressionado>
+  <botao_chamar0_ext_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>310</LINE></botao_chamar0_ext_pressionado>
+  <botao_chamar1_ext_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>315</LINE></botao_chamar1_ext_pressionado>
+  <botao_chamar2_ext_pressionado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>320</LINE></botao_chamar2_ext_pressionado>
+  <end_handle_int0><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>330</LINE></end_handle_int0>
+  <main><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>420</LINE></main>
   <estado_em_movimento><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>437</LINE></estado_em_movimento>
   <estado_parado><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>425</LINE></estado_parado>
   <if_porta_aberta><FILE>C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm</FILE><LINE>439</LINE></if_porta_aberta>

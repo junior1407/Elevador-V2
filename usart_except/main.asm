@@ -227,6 +227,7 @@ cli
 	contador_3:
 		mov andar, destino
 		cbr flags, (1 << flagsEstado)
+		call atualiza_display
 		call stopTimer
 		call resetTimer
 		jmp timer_end
@@ -355,7 +356,7 @@ reset:
 	;you must ensure this value is between 0 and 65535
 	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
 	.if TOP > 65535
-	.error "TOP is out of range"
+	.error "TOP is out of range"	
 	.endif
 
 	;On MEGA series, write high byte of 16-bit timer registers first
@@ -417,7 +418,6 @@ reset:
 	call delay20ms
 
 	main:
-	call atualiza_display
 ;TODO: Ficar printando andar no display usando PIND/B  e PORTD/B
 	; IF flagEstado==1 (Em movimento)
 	sbrc flags, flagsEstado

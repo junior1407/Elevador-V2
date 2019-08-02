@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 15:11:52 2019
+AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 15:26:58 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -695,9 +695,9 @@ EQU  ACIaddr      0000002e
 EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
-CSEG reset        0000012a
-CSEG handle_INT0  00000107
-CSEG handle_INT2  000000e4
+CSEG reset        0000012c
+CSEG handle_INT0  00000109
+CSEG handle_INT2  000000e6
 CSEG OC1A_Interrupt 000000c0
 CSEG USART_TX_Complete 000000bb
 DEF  temp         r16
@@ -742,24 +742,24 @@ CSEG abre         000000a5
 CSEG fecha        000000af
 CSEG timer_estado_em_movimento 000000d6
 CSEG timer_estado_parado 000000c5
-CSEG timer_end    000000e2
+CSEG timer_end    000000e4
 CSEG contador_5   000000ce
 CSEG contador_10  000000d2
 CSEG contador_3   000000da
-CSEG botao_chamar_I0_pressionado 000000f6
-CSEG botao_chamar1_in_pressionado 000000f9
-CSEG botao_chamar2_in_pressionado 000000fc
-CSEG botao_abrir_pressionado 000000ff
-CSEG end_handle_int2 00000105
-CSEG botao_fechar_pressionado 00000122
-CSEG botao_chamar0_ext_pressionado 00000119
-CSEG botao_chamar1_ext_pressionado 0000011c
-CSEG botao_chamar2_ext_pressionado 0000011f
-CSEG end_handle_int0 00000128
+CSEG botao_chamar_I0_pressionado 000000f8
+CSEG botao_chamar1_in_pressionado 000000fb
+CSEG botao_chamar2_in_pressionado 000000fe
+CSEG botao_abrir_pressionado 00000101
+CSEG end_handle_int2 00000107
+CSEG botao_fechar_pressionado 00000124
+CSEG botao_chamar0_ext_pressionado 0000011b
+CSEG botao_chamar1_ext_pressionado 0000011e
+CSEG botao_chamar2_ext_pressionado 00000121
+CSEG end_handle_int0 0000012a
 EQU  UBRRvalue    00000067
 EQU  PRESCALE_DIV 00000100
 EQU  TOP          00007a12
-CSEG main         00000165
+CSEG main         00000167
 CSEG estado_em_movimento 00000171
 CSEG estado_parado 00000169
 CSEG if_porta_aberta 00000172
