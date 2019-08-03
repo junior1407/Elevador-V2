@@ -176,6 +176,8 @@ atualiza_display:
 
 abre:
 	cli
+	call apaga_buzzer
+
 	call resetTimer
 	cbr flags, (1 <<flagsPortaFechada)
 	call liga_led
@@ -233,7 +235,6 @@ OC1A_Interrupt:
 		call stopTimer
 		call resetTimer
 		ldi contador, 0
-	;	call atualiza_display
 		jmp end_time
 	time_parado:
 		sbrc flags, flagsPortaFechada
@@ -366,7 +367,7 @@ reset:
 	.equ PRESCALE = 0b100 ;/256 prescale
 	.equ PRESCALE_DIV = 256
 
-	#define DELAY 1 ;seconds
+	#define DELAY 1  ;seconds
 	.equ WGM = 0b0100 ;Waveform generation mode: CTC
 	;you must ensure this value is between 0 and 65535
 	.equ TOP = int(0.5 + ((CLOCK/PRESCALE_DIV)*DELAY))
