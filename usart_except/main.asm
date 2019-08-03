@@ -28,8 +28,8 @@
 .equ botoesI0 = 2
 .equ botoesI1 = 1
 .equ botoesI2 = 0
-.equ B = 3
-.equ A = 2
+.equ B = 2
+.equ A = 3
 
 
 disable_transmit_interrupt:

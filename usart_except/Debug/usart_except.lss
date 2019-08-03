@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 23:47:30 2019
+AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Sat Aug 03 00:13:06 2019
 
 [builtin](2): Including file 'D:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m328pdef.inc'
 [builtin](2): Including file 'D:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m328pdef.inc'
@@ -1014,8 +1014,8 @@ AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_
                                  .equ botoesI0 = 2
                                  .equ botoesI1 = 1
                                  .equ botoesI2 = 0
-                                 .equ B = 3
-                                 .equ A = 2
+                                 .equ B = 2
+                                 .equ A = 3
                                  
                                  
                                  disable_transmit_interrupt:
@@ -1140,16 +1140,16 @@ AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_
 000092 7f63                      		cbr temp2, (1 << A) | (1 << B)
 000093 940c 00a1                 		jmp end_atualiza
                                  	atualiza_1:
-000095 7f67                      		cbr temp2, (1 << B)
-000096 6064                      		sbr temp2, (1 << A)
+000095 7f6b                      		cbr temp2, (1 << B)
+000096 6068                      		sbr temp2, (1 << A)
 000097 940c 00a1                 		jmp end_atualiza
                                  	atualiza_2:
-000099 7f6b                      		cbr temp2, (1 << A)
-00009a 6068                      		sbr temp2, (1 << B)
+000099 7f67                      		cbr temp2, (1 << A)
+00009a 6064                      		sbr temp2, (1 << B)
 00009b 940c 00a1                 		jmp end_atualiza
                                  	atualiza_3:
-00009d 6064                      		sbr temp2, (1 << A)
-00009e 6068                      		sbr temp2, (1 << B)
+00009d 6068                      		sbr temp2, (1 << A)
+00009e 6064                      		sbr temp2, (1 << B)
 00009f 940c 00a1                 		jmp end_atualiza
                                  	; PORTD = xxxxABxx
                                  	end_atualiza:

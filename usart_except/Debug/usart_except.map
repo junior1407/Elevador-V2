@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 23:47:30 2019
+AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Sat Aug 03 00:13:06 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -718,8 +718,8 @@ EQU  botoesE2     00000004
 EQU  botoesI0     00000002
 EQU  botoesI1     00000001
 EQU  botoesI2     00000000
-EQU  B            00000003
-EQU  A            00000002
+EQU  B            00000002
+EQU  A            00000003
 CSEG disable_transmit_interrupt 0000002a
 CSEG enable_transmit_interrupt 00000032
 CSEG startTimer   0000003a
