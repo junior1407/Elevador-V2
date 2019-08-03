@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 19:41:19 2019
+AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 19:43:01 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -695,7 +695,7 @@ EQU  ACIaddr      0000002e
 EQU  TWIaddr      00000030
 EQU  SPMRaddr     00000032
 EQU  INT_VECTORS_SIZE 00000034
-CSEG reset        0000014d
+CSEG reset        0000014b
 CSEG handle_INT0  00000120
 CSEG handle_INT2  000000f8
 CSEG OC1A_Interrupt 000000d3
@@ -754,30 +754,30 @@ CSEG botao_chamar1_in_pressionado 00000110
 CSEG botao_chamar2_in_pressionado 00000113
 CSEG botao_abrir_pressionado 00000116
 CSEG end_handle_int2 0000011d
-CSEG botao_fechar_pressionado 00000140
+CSEG botao_fechar_pressionado 0000013e
 CSEG botao_chamar0_ext_pressionado 00000135
 CSEG botao_chamar1_ext_pressionado 00000138
-CSEG botao_chamar2_ext_pressionado 0000013d
-CSEG end_handle_int0 0000014a
+CSEG botao_chamar2_ext_pressionado 0000013b
+CSEG end_handle_int0 00000148
 EQU  UBRRvalue    00000067
 EQU  PRESCALE_DIV 00000100
 EQU  TOP          0000f424
-CSEG main         00000191
-CSEG main_parado  00000196
-CSEG main_parado_2 000001a0
-CSEG main_parado_1 000001bc
-CSEG main_parado_0_GO 0000019e
-CSEG default      00000201
-CSEG main_parado_0 000001e0
-CSEG main_parado_2_E2_I2 000001b4
-CSEG main_parado_2_RESTO 000001b9
-CSEG main_parado_1_I1 000001d0
-CSEG main_parado_1_E2_I2 000001d5
-CSEG main_parado_1_E1 000001d8
-CSEG main_parado_1_E0_I0 000001dd
-CSEG main_parado_0_I0 000001f4
-CSEG main_parado_0_E2_I2_E1_I1 000001f9
-CSEG main_parado_0_E0 000001fc
-CSEG default_porta_fechada 00000204
-CSEG main_go      0000020d
-CSEG default_porta_fechada_destino_diff_andar 00000206
+CSEG main         0000018f
+CSEG main_parado  00000194
+CSEG main_parado_2 0000019e
+CSEG main_parado_1 000001ba
+CSEG main_parado_0_GO 0000019c
+CSEG default      000001ff
+CSEG main_parado_0 000001de
+CSEG main_parado_2_E2_I2 000001b2
+CSEG main_parado_2_RESTO 000001b7
+CSEG main_parado_1_I1 000001ce
+CSEG main_parado_1_E2_I2 000001d3
+CSEG main_parado_1_E1 000001d6
+CSEG main_parado_1_E0_I0 000001db
+CSEG main_parado_0_I0 000001f2
+CSEG main_parado_0_E2_I2_E1_I1 000001f7
+CSEG main_parado_0_E0 000001fa
+CSEG default_porta_fechada 00000202
+CSEG main_go      0000020b
+CSEG default_porta_fechada_destino_diff_andar 00000204
