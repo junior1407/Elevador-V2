@@ -186,6 +186,7 @@ abre:
 	ret
 
 fecha:
+	sts UDR0, temp4
 	cli
 	sbr flags, (1 <<flagsPortaFechada)
 	call apaga_buzzer
@@ -198,28 +199,8 @@ fecha:
 
 
 USART_TX_Complete:
-	cpi andar, 2
-	breq tx_2
-	cpi andar, 1
-	breq tx_1	
-	cpi andar, 0
-	breq tx_0
-	reti
-	tx_2: 
-		ldi temp4, '2'
-		sts UDR0, temp4
-		jmp end_usart
-	tx_1:
-		ldi temp4, '1'
-		sts UDR0, temp4
-		jmp end_usart
-	tx_0:
-		ldi temp4, '0'
-		sts UDR0, temp4
-		jmp end_usart
-	end_usart:
-		;jmp disable_transmit_interrupt
-	reti
+reti
+
 
 OC1A_Interrupt:
 	cli
@@ -235,6 +216,25 @@ OC1A_Interrupt:
 		call stopTimer
 		call resetTimer
 		ldi contador, 0
+		
+		cpi andar, 2
+		breq tx_2
+		cpi andar, 1
+		breq tx_1	
+		cpi andar, 0
+		breq tx_0
+		tx_2: 
+			ldi temp4, '2'
+			sts UDR0, temp4
+			jmp end_time
+		tx_1:
+			ldi temp4, '1'
+			sts UDR0, temp4
+			jmp end_time
+		tx_0:
+			ldi temp4, '0'
+			sts UDR0, temp4
+		  jmp end_time
 		jmp end_time
 	time_parado:
 		sbrc flags, flagsPortaFechada
@@ -286,17 +286,23 @@ handle_INT2:
 	
 	jmp end_handle_int2
 	botao_chamar_I0_pressionado:
-		
+		ldi temp4, 'E'
+		sts UDR0, temp4			
 		sbr botoes, ( 1<<botoesI0)
 		jmp end_handle_int2
 	botao_chamar1_in_pressionado:
+		ldi temp4, 'G'
+		sts UDR0, temp4		
 		sbr botoes, ( 1<<botoesI1)
 		jmp end_handle_int2
 	botao_chamar2_in_pressionado:
-				
+		ldi temp4, 'H'
+		sts UDR0, temp4				
 		sbr botoes, ( 1<<botoesI2)
 		jmp end_handle_int2
 	botao_abrir_pressionado:
+		ldi temp4, 'A'
+		sts UDR0, temp4
 		sbrc flags, flagsEstado
 		jmp end_handle_int2
 		call abre
@@ -327,15 +333,23 @@ handle_INT0:
 	jmp botao_chamar2_ext_pressionado
 	jmp end_handle_int0
 	botao_chamar0_ext_pressionado:
+		ldi temp4, 'B'
+		sts UDR0, temp4		
 		sbr botoes, ( 1<<botoesE0)
 		jmp end_handle_int0
 	botao_chamar1_ext_pressionado:
+		ldi temp4, 'C'
+		sts UDR0, temp4		
 		sbr botoes, ( 1<<botoesE1)
 		jmp end_handle_int0
 	botao_chamar2_ext_pressionado:
+		ldi temp4, 'D'
+		sts UDR0, temp4		
 		sbr botoes, ( 1<<botoesE2)
 		jmp end_handle_int0
 	botao_fechar_pressionado:
+		ldi temp4, 'F'
+		sts UDR0, temp4		
 		sbrc flags,flagsEstado
 		jmp end_handle_int0
 		sbrc flags, flagsPortaFechada
@@ -347,10 +361,7 @@ handle_INT0:
 	pop temp
 	reti
 reset:
-
 	cli
-
-
 	.equ UBRRvalue = 103
 	;initialize USART
 	ldi temp, high (UBRRvalue) ;baud rate
@@ -444,7 +455,6 @@ reset:
 
 	sei
 	call delay20ms
-	sts UDR0, temp4
 	main:
 	call atualiza_display
 	sbrc flags, flagsEstado

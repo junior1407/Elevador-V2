@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 22:17:22 2019
+AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_except\main.asm Fri Aug 02 22:33:23 2019
 
 [builtin](2): Including file 'D:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m328pdef.inc'
 [builtin](2): Including file 'D:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m328pdef.inc'
@@ -985,15 +985,15 @@ AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
-000000 940c 014d                 	jmp reset
+000000 940c 0166                 	jmp reset
                                  .org 0x0006 
-000006 940c 0122                 	jmp handle_INT0
+000006 940c 012f                 	jmp handle_INT0
                                  .org 0x000A
-00000a 940c 00fa                 	jmp handle_INT2
+00000a 940c 00fb                 	jmp handle_INT2
                                  .org OC1Aaddr
-000016 940c 00d5                 	jmp OC1A_Interrupt
+000016 940c 00c1                 	jmp OC1A_Interrupt
                                  .org 0x0028
-000028 940c 00be                     jmp USART_TX_Complete
+000028 940c 00c0                     jmp USART_TX_Complete
                                  .def temp = r16
                                  .def temp2 = r22
                                  .def temp3 = r24
@@ -1172,83 +1172,83 @@ AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_
 0000b0 9508                      	ret
                                  
                                  fecha:
-0000b1 94f8                      	cli
-0000b2 6041                      	sbr flags, (1 <<flagsPortaFechada)
-0000b3 940e 005d                 	call apaga_buzzer
-0000b5 940e 006d                 	call apaga_led
-0000b7 940e 004d                 	call stopTimer
-0000b9 940e 0042                 	call resetTimer
-0000bb e030                      	ldi contador, 0
-0000bc 9478                      	sei
-0000bd 9508                      	ret
+0000b1 9390 00c6                 	sts UDR0, temp4
+0000b3 94f8                      	cli
+0000b4 6041                      	sbr flags, (1 <<flagsPortaFechada)
+0000b5 940e 005d                 	call apaga_buzzer
+0000b7 940e 006d                 	call apaga_led
+0000b9 940e 004d                 	call stopTimer
+0000bb 940e 0042                 	call resetTimer
+0000bd e030                      	ldi contador, 0
+0000be 9478                      	sei
+0000bf 9508                      	ret
                                  
                                  
                                  USART_TX_Complete:
-0000be 3012                      	cpi andar, 2
-0000bf f029                      	breq tx_2
-0000c0 3011                      	cpi andar, 1
-0000c1 f041                      	breq tx_1	
-0000c2 3010                      	cpi andar, 0
-0000c3 f059                      	breq tx_0
-0000c4 9518                      	reti
-                                 	tx_2: 
-0000c5 e392                      		ldi temp4, '2'
-0000c6 9390 00c6                 		sts UDR0, temp4
-0000c8 940c 00d4                 		jmp end_usart
-                                 	tx_1:
-0000ca e391                      		ldi temp4, '1'
-0000cb 9390 00c6                 		sts UDR0, temp4
-0000cd 940c 00d4                 		jmp end_usart
-                                 	tx_0:
-0000cf e390                      		ldi temp4, '0'
-0000d0 9390 00c6                 		sts UDR0, temp4
-0000d2 940c 00d4                 		jmp end_usart
-                                 	end_usart:
-                                 		;jmp disable_transmit_interrupt
-0000d4 9518                      	reti
+0000c0 9518                      reti
+                                 
                                  
                                  OC1A_Interrupt:
-0000d5 94f8                      	cli
-0000d6 5f3f                      	subi contador, -1
-0000d7 fd41                      	sbrc flags, flagsEstado
-0000d8 940c 00dc                 	jmp time_movimento
-0000da 940c 00e7                 	jmp time_parado
+0000c1 94f8                      	cli
+0000c2 5f3f                      	subi contador, -1
+0000c3 fd41                      	sbrc flags, flagsEstado
+0000c4 940c 00c8                 	jmp time_movimento
+0000c6 940c 00e8                 	jmp time_parado
                                  	time_movimento:
-0000dc 3033                      		cpi contador, 3
-0000dd f4d1                      		brne end_time
-0000de 7f4d                      		cbr flags, (1<<flagsEstado)
-0000df 2f15                      		mov andar, destino
-0000e0 940e 004d                 		call stopTimer
-0000e2 940e 0042                 		call resetTimer
-0000e4 e030                      		ldi contador, 0
-0000e5 940c 00f8                 		jmp end_time
+0000c8 3033                      		cpi contador, 3
+0000c9 f579                      		brne end_time
+0000ca 7f4d                      		cbr flags, (1<<flagsEstado)
+0000cb 2f15                      		mov andar, destino
+0000cc 940e 004d                 		call stopTimer
+0000ce 940e 0042                 		call resetTimer
+0000d0 e030                      		ldi contador, 0
+                                 		
+0000d1 3012                      		cpi andar, 2
+0000d2 f021                      		breq tx_2
+0000d3 3011                      		cpi andar, 1
+0000d4 f039                      		breq tx_1	
+0000d5 3010                      		cpi andar, 0
+0000d6 f051                      		breq tx_0
+                                 		tx_2: 
+0000d7 e392                      			ldi temp4, '2'
+0000d8 9390 00c6                 			sts UDR0, temp4
+0000da 940c 00f9                 			jmp end_time
+                                 		tx_1:
+0000dc e391                      			ldi temp4, '1'
+0000dd 9390 00c6                 			sts UDR0, temp4
+0000df 940c 00f9                 			jmp end_time
+                                 		tx_0:
+0000e1 e390                      			ldi temp4, '0'
+0000e2 9390 00c6                 			sts UDR0, temp4
+0000e4 940c 00f9                 		  jmp end_time
+0000e6 940c 00f9                 		jmp end_time
                                  	time_parado:
-0000e7 fd40                      		sbrc flags, flagsPortaFechada
-0000e8 940c 00f8                 		jmp end_time
-0000ea 3035                      		cpi contador, 5
-0000eb f021                      		breq time_parado_aberta_5
-0000ec 303a                      		cpi contador, 10
-0000ed f031                      		breq time_parado_aberta_10
-0000ee 940c 00f8                 		jmp end_time
+0000e8 fd40                      		sbrc flags, flagsPortaFechada
+0000e9 940c 00f9                 		jmp end_time
+0000eb 3035                      		cpi contador, 5
+0000ec f021                      		breq time_parado_aberta_5
+0000ed 303a                      		cpi contador, 10
+0000ee f031                      		breq time_parado_aberta_10
+0000ef 940c 00f9                 		jmp end_time
                                  
                                  	time_parado_aberta_5:
-0000f0 940e 0055                 		call liga_buzzer
-0000f2 940c 00f8                 		jmp end_time
+0000f1 940e 0055                 		call liga_buzzer
+0000f3 940c 00f9                 		jmp end_time
                                  	time_parado_aberta_10:
-0000f4 940e 00b1                 		call fecha
-0000f6 940c 00f8                 		jmp end_time
+0000f5 940e 00b1                 		call fecha
+0000f7 940c 00f9                 		jmp end_time
                                  	end_time:
-0000f8 9478                      	sei
-0000f9 9518                      	reti
+0000f9 9478                      	sei
+0000fa 9518                      	reti
                                  	
                                  	
                                  handle_INT2:
-0000fa 930f                      	push temp
-0000fb b109                      	in temp, PIND
-0000fc 94f8                      	cli 
-0000fd 940e 0075                 	call delay20ms
+0000fb 930f                      	push temp
+0000fc b109                      	in temp, PIND
+0000fd 94f8                      	cli 
+0000fe 940e 0075                 	call delay20ms
                                  ;	call liga_buzzer
-0000ff 940e 0075                 	call delay20ms;Debouncing
+000100 940e 0075                 	call delay20ms;Debouncing
                                  	;call delay20ms;
                                  	;0 do Elevador = PD4 ; PCINT20
                                  	;1 do Elevador = PD5 ; PCINT21
@@ -1257,97 +1257,108 @@ AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_
                                  
                                  	
                                  	
-000101 fd04                      	sbrc temp,4 
-000102 940c 010f                 	jmp botao_chamar_I0_pressionado
+000102 fd04                      	sbrc temp,4 
+000103 940c 0110                 	jmp botao_chamar_I0_pressionado
                                  	
-000104 fd05                      	sbrc temp,5
-000105 940c 0112                 	jmp botao_chamar1_in_pressionado
+000105 fd05                      	sbrc temp,5
+000106 940c 0116                 	jmp botao_chamar1_in_pressionado
                                  	
-000107 fd06                      	sbrc temp,6
-000108 940c 0115                 	jmp botao_chamar2_in_pressionado
+000108 fd06                      	sbrc temp,6
+000109 940c 011c                 	jmp botao_chamar2_in_pressionado
                                  	
                                  
-00010a fd07                      	sbrc temp,7
-00010b 940c 0118                 	jmp botao_abrir_pressionado
+00010b fd07                      	sbrc temp,7
+00010c 940c 0122                 	jmp botao_abrir_pressionado
                                  	
-00010d 940c 011f                 	jmp end_handle_int2
+00010e 940c 012c                 	jmp end_handle_int2
                                  	botao_chamar_I0_pressionado:
-                                 		
-00010f 6024                      		sbr botoes, ( 1<<botoesI0)
-000110 940c 011f                 		jmp end_handle_int2
+000110 e495                      		ldi temp4, 'E'
+000111 9390 00c6                 		sts UDR0, temp4			
+000113 6024                      		sbr botoes, ( 1<<botoesI0)
+000114 940c 012c                 		jmp end_handle_int2
                                  	botao_chamar1_in_pressionado:
-000112 6022                      		sbr botoes, ( 1<<botoesI1)
-000113 940c 011f                 		jmp end_handle_int2
+000116 e497                      		ldi temp4, 'G'
+000117 9390 00c6                 		sts UDR0, temp4		
+000119 6022                      		sbr botoes, ( 1<<botoesI1)
+00011a 940c 012c                 		jmp end_handle_int2
                                  	botao_chamar2_in_pressionado:
-                                 				
-000115 6021                      		sbr botoes, ( 1<<botoesI2)
-000116 940c 011f                 		jmp end_handle_int2
+00011c e498                      		ldi temp4, 'H'
+00011d 9390 00c6                 		sts UDR0, temp4				
+00011f 6021                      		sbr botoes, ( 1<<botoesI2)
+000120 940c 012c                 		jmp end_handle_int2
                                  	botao_abrir_pressionado:
-000118 fd41                      		sbrc flags, flagsEstado
-000119 940c 011f                 		jmp end_handle_int2
-00011b 940e 00a5                 		call abre
-00011d 940c 011f                 		jmp end_handle_int2
+000122 e491                      		ldi temp4, 'A'
+000123 9390 00c6                 		sts UDR0, temp4
+000125 fd41                      		sbrc flags, flagsEstado
+000126 940c 012c                 		jmp end_handle_int2
+000128 940e 00a5                 		call abre
+00012a 940c 012c                 		jmp end_handle_int2
                                  	end_handle_int2:
-00011f 9478                      	sei
-000120 910f                      	pop temp
-000121 9518                      	reti
+00012c 9478                      	sei
+00012d 910f                      	pop temp
+00012e 9518                      	reti
                                  
                                  
                                  handle_INT0:
-000122 930f                      	push temp
-000123 b103                      	in temp, PINB
-000124 94f8                      	cli ; TODO: Só desligar essa interrupção
+00012f 930f                      	push temp
+000130 b103                      	in temp, PINB
+000131 94f8                      	cli ; TODO: Só desligar essa interrupção
                                  	; Fechar do Elevador = PB0; PCINT0
                                  	; Chamar 0 = PB2; PCINT2
                                  	; Chamar 1 = PB3; PCINT3 
                                  	; Chamar 2  = PB4; PCINT4
-000125 940e 0075                 	call delay20ms
-000127 940e 0075                 	call delay20ms;Debouncing
-000129 fd00                      	sbrc temp,0
-00012a 940c 0140                 	jmp botao_fechar_pressionado
-00012c fd02                      	sbrc temp,2
-00012d 940c 0137                 	jmp botao_chamar0_ext_pressionado
-00012f fd03                      	sbrc temp,3
-000130 940c 013a                 	jmp botao_chamar1_ext_pressionado
-000132 fd04                      	sbrc temp,4
-000133 940c 013d                 	jmp botao_chamar2_ext_pressionado
-000135 940c 014a                 	jmp end_handle_int0
+000132 940e 0075                 	call delay20ms
+000134 940e 0075                 	call delay20ms;Debouncing
+000136 fd00                      	sbrc temp,0
+000137 940c 0156                 	jmp botao_fechar_pressionado
+000139 fd02                      	sbrc temp,2
+00013a 940c 0144                 	jmp botao_chamar0_ext_pressionado
+00013c fd03                      	sbrc temp,3
+00013d 940c 014a                 	jmp botao_chamar1_ext_pressionado
+00013f fd04                      	sbrc temp,4
+000140 940c 0150                 	jmp botao_chamar2_ext_pressionado
+000142 940c 0163                 	jmp end_handle_int0
                                  	botao_chamar0_ext_pressionado:
-000137 6420                      		sbr botoes, ( 1<<botoesE0)
-000138 940c 014a                 		jmp end_handle_int0
+000144 e492                      		ldi temp4, 'B'
+000145 9390 00c6                 		sts UDR0, temp4		
+000147 6420                      		sbr botoes, ( 1<<botoesE0)
+000148 940c 0163                 		jmp end_handle_int0
                                  	botao_chamar1_ext_pressionado:
-00013a 6220                      		sbr botoes, ( 1<<botoesE1)
-00013b 940c 014a                 		jmp end_handle_int0
+00014a e493                      		ldi temp4, 'C'
+00014b 9390 00c6                 		sts UDR0, temp4		
+00014d 6220                      		sbr botoes, ( 1<<botoesE1)
+00014e 940c 0163                 		jmp end_handle_int0
                                  	botao_chamar2_ext_pressionado:
-00013d 6120                      		sbr botoes, ( 1<<botoesE2)
-00013e 940c 014a                 		jmp end_handle_int0
+000150 e494                      		ldi temp4, 'D'
+000151 9390 00c6                 		sts UDR0, temp4		
+000153 6120                      		sbr botoes, ( 1<<botoesE2)
+000154 940c 0163                 		jmp end_handle_int0
                                  	botao_fechar_pressionado:
-000140 fd41                      		sbrc flags,flagsEstado
-000141 940c 014a                 		jmp end_handle_int0
-000143 fd40                      		sbrc flags, flagsPortaFechada
-000144 940c 014a                 		jmp end_handle_int0
-000146 940e 00b1                 		call fecha
-000148 940c 014a                 		jmp end_handle_int0
+000156 e496                      		ldi temp4, 'F'
+000157 9390 00c6                 		sts UDR0, temp4		
+000159 fd41                      		sbrc flags,flagsEstado
+00015a 940c 0163                 		jmp end_handle_int0
+00015c fd40                      		sbrc flags, flagsPortaFechada
+00015d 940c 0163                 		jmp end_handle_int0
+00015f 940e 00b1                 		call fecha
+000161 940c 0163                 		jmp end_handle_int0
                                  	end_handle_int0:
-00014a 9478                      	sei
-00014b 910f                      	pop temp
-00014c 9518                      	reti
+000163 9478                      	sei
+000164 910f                      	pop temp
+000165 9518                      	reti
                                  reset:
-                                 
-00014d 94f8                      	cli
-                                 
-                                 
+000166 94f8                      	cli
                                  	.equ UBRRvalue = 103
                                  	;initialize USART
-00014e e000                      	ldi temp, high (UBRRvalue) ;baud rate
-00014f 9300 00c5                 	sts UBRR0H, temp
-000151 e607                      	ldi temp, low (UBRRvalue)
-000152 9300 00c4                 	sts UBRR0L, temp
+000167 e000                      	ldi temp, high (UBRRvalue) ;baud rate
+000168 9300 00c5                 	sts UBRR0H, temp
+00016a e607                      	ldi temp, low (UBRRvalue)
+00016b 9300 00c4                 	sts UBRR0L, temp
                                  	;8data, 1 stop, no parity
-000154 e006                      	ldi temp, (3<<UCSZ00)
-000155 9300 00c2                 	sts UCSR0C, temp
+00016d e006                      	ldi temp, (3<<UCSZ00)
+00016e 9300 00c2                 	sts UCSR0C, temp
                                  
-000157 940e 0032                 	call enable_transmit_interrupt
+000170 940e 0032                 	call enable_transmit_interrupt
                                  
                                  	#define CLOCK 16.0e6 ;clock speed
                                  	.equ PRESCALE = 0b100 ;/256 prescale
@@ -1361,183 +1372,182 @@ AVRASM ver. 2.2.7  C:\Users\valdir\Documents\faculdade\micro\usart_except\usart_
                                  	.endif
                                  
                                  	;On MEGA series, write high byte of 16-bit timer registers first
-000159 ef04                      	ldi temp, high(TOP) ;initialize compare value (TOP)
-00015a 9300 0089                 	sts OCR1AH, temp
-00015c e204                      	ldi temp, low(TOP)
-00015d 9300 0088                 	sts OCR1AL, temp
-00015f e000                      	ldi temp, ((WGM&0b11) << WGM10) ;lower 2 bits of WGM 
-000160 9300 0080                 	sts TCCR1A, temp
+000172 ef04                      	ldi temp, high(TOP) ;initialize compare value (TOP)
+000173 9300 0089                 	sts OCR1AH, temp
+000175 e204                      	ldi temp, low(TOP)
+000176 9300 0088                 	sts OCR1AL, temp
+000178 e000                      	ldi temp, ((WGM&0b11) << WGM10) ;lower 2 bits of WGM 
+000179 9300 0080                 	sts TCCR1A, temp
                                  	;upper 2 bits of WGM and clock select
                                  
-000162 9100 006f                 	lds r16, TIMSK1
-000164 6002                      	sbr r16, 1 <<OCIE1A
-000165 9300 006f                 	sts TIMSK1, r16	
+00017b 9100 006f                 	lds r16, TIMSK1
+00017d 6002                      	sbr r16, 1 <<OCIE1A
+00017e 9300 006f                 	sts TIMSK1, r16	
                                  	
                                  	
                                  	
                                  
                                  	;CONFIG PORTB E PORTD como entrada(0) e saida(1)
-000167 e202                      	ldi temp, 0b00100010
-000168 b904                      	out DDRB, temp
-000169 e00c                      	ldi temp, 0b00001100
-00016a b90a                      	out DDRD, temp
+000180 e202                      	ldi temp, 0b00100010
+000181 b904                      	out DDRB, temp
+000182 e00c                      	ldi temp, 0b00001100
+000183 b90a                      	out DDRD, temp
                                  
                                  
                                  	;Pin change Interrupt (23:16) and (0:7)
-00016b e005                      	ldi temp, 0b00000101;
-00016c 9300 0068                 	sts PCICR, temp
+000184 e005                      	ldi temp, 0b00000101;
+000185 9300 0068                 	sts PCICR, temp
                                   
                                  	; Enables PCINT 4 TO 0, but 1 (the buzzer).
                                  	;ldi temp, 0b00011101;
-00016e ef0f                      	ldi temp, 0b11111111
+000187 ef0f                      	ldi temp, 0b11111111
                                  	;out PCMSK0, temp
-00016f 9300 006b                 	sts PCMSK0, temp 
+000188 9300 006b                 	sts PCMSK0, temp 
                                  
                                  	; Enables PCINT 23 TO 20
-000171 ef00                      	ldi temp, 0b11110000
-000172 9300 006d                 	sts PCMSK2, temp 
+00018a ef00                      	ldi temp, 0b11110000
+00018b 9300 006d                 	sts PCMSK2, temp 
                                  	
                                  
                                  	;Stack initialization
-000174 ef0f                      	ldi temp, low(RAMEND)
-000175 bf0d                      	out SPL, temp
-000176 e008                      	ldi temp, high(RAMEND)
-000177 bf0e                      	out SPH, temp
+00018d ef0f                      	ldi temp, low(RAMEND)
+00018e bf0d                      	out SPL, temp
+00018f e008                      	ldi temp, high(RAMEND)
+000190 bf0e                      	out SPH, temp
                                  
-000178 e020                      	ldi botoes, 0
-000179 e041                      	ldi flags, 0b00000001 ; Porta fechada e Parado.
+000191 e020                      	ldi botoes, 0
+000192 e041                      	ldi flags, 0b00000001 ; Porta fechada e Parado.
                                  
-00017a e000                      	ldi temp,0
-00017b 9300 000b                 	sts PORTD,temp
-00017d 9300 0005                 	sts portB,temp
+000193 e000                      	ldi temp,0
+000194 9300 000b                 	sts PORTD,temp
+000196 9300 0005                 	sts portB,temp
                                  
-00017f e060                      	ldi temp2,0
-000180 e080                      	ldi temp3,0
-000181 e090                      	ldi temp4,0
-000182 e030                      	ldi contador, 0
-000183 e070                      	ldi contadorSerial,0
-                                 
-                                 
+000198 e060                      	ldi temp2,0
+000199 e080                      	ldi temp3,0
+00019a e090                      	ldi temp4,0
+00019b e030                      	ldi contador, 0
+00019c e070                      	ldi contadorSerial,0
                                  
                                  
-000184 940e 00b1                 	call fecha
-000186 940e 004d                 	call stopTimer    ; Timer 
-000188 940e 0042                 	call resetTimer   ; Timer = Resetado
-00018a e010                      	ldi andar, 0        ; Andar = 0
-00018b e050                      	ldi destino, 0
                                  
                                  
-00018c 9478                      	sei
-00018d 940e 0075                 	call delay20ms
-00018f 9390 00c6                 	sts UDR0, temp4
+00019d 940e 00b1                 	call fecha
+00019f 940e 004d                 	call stopTimer    ; Timer 
+0001a1 940e 0042                 	call resetTimer   ; Timer = Resetado
+0001a3 e010                      	ldi andar, 0        ; Andar = 0
+0001a4 e050                      	ldi destino, 0
+                                 
+                                 
+0001a5 9478                      	sei
+0001a6 940e 0075                 	call delay20ms
                                  	main:
-000191 940e 0085                 	call atualiza_display
-000193 fd41                      	sbrc flags, flagsEstado
-000194 940c 0191                 	jmp main
+0001a8 940e 0085                 	call atualiza_display
+0001aa fd41                      	sbrc flags, flagsEstado
+0001ab 940c 01a8                 	jmp main
                                  	main_parado:
-000196 3012                      		cpi andar, 2
-000197 f041                      		breq main_parado_2
-000198 3011                      		cpi andar, 1
-000199 f111                      		breq main_parado_1
-00019a 3010                      		cpi andar, 0
-00019b f011                      		breq main_parado_0_GO
-00019c 940c 0201                 		jmp default
+0001ad 3012                      		cpi andar, 2
+0001ae f041                      		breq main_parado_2
+0001af 3011                      		cpi andar, 1
+0001b0 f111                      		breq main_parado_1
+0001b1 3010                      		cpi andar, 0
+0001b2 f011                      		breq main_parado_0_GO
+0001b3 940c 0218                 		jmp default
                                  	main_parado_0_GO:
-00019e 940c 01e0                 		jmp main_parado_0
+0001b5 940c 01f7                 		jmp main_parado_0
                                  	main_parado_2:
-0001a0 fd24                      		sbrc botoes, botoesE2
-0001a1 940c 01b4                 		jmp main_parado_2_E2_I2
-0001a3 fd20                      		sbrc botoes, botoesI2
-0001a4 940c 01b4                 		jmp main_parado_2_E2_I2
-0001a6 fd25                      		sbrc botoes, botoesE1
-0001a7 940c 01b9                 		jmp main_parado_2_RESTO
-0001a9 fd21                      		sbrc botoes, botoesI1
-0001aa 940c 01b9                 		jmp main_parado_2_RESTO
-0001ac fd26                      		sbrc botoes, botoesE0
-0001ad 940c 01b9                 		jmp main_parado_2_RESTO
-0001af fd22                      		sbrc botoes, botoesI0
-0001b0 940c 01b9                 		jmp main_parado_2_RESTO
-0001b2 940c 0201                 		jmp default
+0001b7 fd24                      		sbrc botoes, botoesE2
+0001b8 940c 01cb                 		jmp main_parado_2_E2_I2
+0001ba fd20                      		sbrc botoes, botoesI2
+0001bb 940c 01cb                 		jmp main_parado_2_E2_I2
+0001bd fd25                      		sbrc botoes, botoesE1
+0001be 940c 01d0                 		jmp main_parado_2_RESTO
+0001c0 fd21                      		sbrc botoes, botoesI1
+0001c1 940c 01d0                 		jmp main_parado_2_RESTO
+0001c3 fd26                      		sbrc botoes, botoesE0
+0001c4 940c 01d0                 		jmp main_parado_2_RESTO
+0001c6 fd22                      		sbrc botoes, botoesI0
+0001c7 940c 01d0                 		jmp main_parado_2_RESTO
+0001c9 940c 0218                 		jmp default
                                  	main_parado_2_E2_I2:
-0001b4 940e 00a5                 		call abre
-0001b6 7e2e                      		cbr botoes, (1<<botoesE2)|(1<<botoesI2)
-0001b7 940c 0201                 		jmp default
+0001cb 940e 00a5                 		call abre
+0001cd 7e2e                      		cbr botoes, (1<<botoesE2)|(1<<botoesI2)
+0001ce 940c 0218                 		jmp default
                                  	main_parado_2_RESTO:
-0001b9 e051                      		ldi destino, 1
-0001ba 940c 0201                 		jmp default
+0001d0 e051                      		ldi destino, 1
+0001d1 940c 0218                 		jmp default
                                  	main_parado_1:
-0001bc fd21                      		sbrc botoes, botoesI1
-0001bd 940c 01d0                 		jmp main_parado_1_I1
+0001d3 fd21                      		sbrc botoes, botoesI1
+0001d4 940c 01e7                 		jmp main_parado_1_I1
                                  
-0001bf fd20                      		sbrc botoes, botoesI2
-0001c0 940c 01d5                 		jmp main_parado_1_E2_I2
-0001c2 fd24                      		sbrc botoes, botoesE2
-0001c3 940c 01d5                 		jmp main_parado_1_E2_I2
+0001d6 fd20                      		sbrc botoes, botoesI2
+0001d7 940c 01ec                 		jmp main_parado_1_E2_I2
+0001d9 fd24                      		sbrc botoes, botoesE2
+0001da 940c 01ec                 		jmp main_parado_1_E2_I2
                                  
-0001c5 fd25                      		sbrc botoes, botoesE1
-0001c6 940c 01d8                 		jmp main_parado_1_E1
+0001dc fd25                      		sbrc botoes, botoesE1
+0001dd 940c 01ef                 		jmp main_parado_1_E1
                                  
-0001c8 fd26                      		sbrc botoes, botoesE0
-0001c9 940c 01dd                 		jmp main_parado_1_E0_I0
-0001cb fd22                      		sbrc botoes, botoesI0
-0001cc 940c 01dd                 		jmp main_parado_1_E0_I0
-0001ce 940c 0201                 		jmp default
+0001df fd26                      		sbrc botoes, botoesE0
+0001e0 940c 01f4                 		jmp main_parado_1_E0_I0
+0001e2 fd22                      		sbrc botoes, botoesI0
+0001e3 940c 01f4                 		jmp main_parado_1_E0_I0
+0001e5 940c 0218                 		jmp default
                                  	main_parado_1_I1:
-0001d0 940e 00a5                 		call abre
-0001d2 7f2d                      		cbr botoes, (1<<botoesI1)
-0001d3 940c 0201                 		jmp default
+0001e7 940e 00a5                 		call abre
+0001e9 7f2d                      		cbr botoes, (1<<botoesI1)
+0001ea 940c 0218                 		jmp default
                                  	main_parado_1_E2_I2:
-0001d5 e052                      		ldi destino,2
-0001d6 940c 0201                 		jmp default
+0001ec e052                      		ldi destino,2
+0001ed 940c 0218                 		jmp default
                                  	main_parado_1_E1:
-0001d8 940e 00a5                 		call abre
-0001da 7d2f                      		cbr botoes, (1<<botoesE1)		
-0001db 940c 0201                 		jmp default
+0001ef 940e 00a5                 		call abre
+0001f1 7d2f                      		cbr botoes, (1<<botoesE1)		
+0001f2 940c 0218                 		jmp default
                                  	main_parado_1_E0_I0:
-0001dd e050                      		ldi destino,0
-0001de 940c 0201                 		jmp default
+0001f4 e050                      		ldi destino,0
+0001f5 940c 0218                 		jmp default
                                  	main_parado_0:
                                  
-0001e0 fd22                      		sbrc botoes, botoesI0
-0001e1 940c 01f4                 		jmp main_parado_0_I0
+0001f7 fd22                      		sbrc botoes, botoesI0
+0001f8 940c 020b                 		jmp main_parado_0_I0
                                  
-0001e3 fd20                      		sbrc botoes, botoesI2
-0001e4 940c 01f9                 		jmp main_parado_0_E2_I2_E1_I1
-0001e6 fd24                      		sbrc botoes, botoesE2
-0001e7 940c 01f9                 		jmp main_parado_0_E2_I2_E1_I1
-0001e9 fd21                      		sbrc botoes, botoesI1
-0001ea 940c 01f9                 		jmp main_parado_0_E2_I2_E1_I1
-0001ec fd25                      		sbrc botoes, botoesE1
-0001ed 940c 01f9                 		jmp main_parado_0_E2_I2_E1_I1
+0001fa fd20                      		sbrc botoes, botoesI2
+0001fb 940c 0210                 		jmp main_parado_0_E2_I2_E1_I1
+0001fd fd24                      		sbrc botoes, botoesE2
+0001fe 940c 0210                 		jmp main_parado_0_E2_I2_E1_I1
+000200 fd21                      		sbrc botoes, botoesI1
+000201 940c 0210                 		jmp main_parado_0_E2_I2_E1_I1
+000203 fd25                      		sbrc botoes, botoesE1
+000204 940c 0210                 		jmp main_parado_0_E2_I2_E1_I1
                                  
-0001ef fd26                      		sbrc botoes, botoesE0
-0001f0 940c 01fc                 		jmp main_parado_0_E0
-0001f2 940c 0201                 		jmp default
+000206 fd26                      		sbrc botoes, botoesE0
+000207 940c 0213                 		jmp main_parado_0_E0
+000209 940c 0218                 		jmp default
                                  
                                  	main_parado_0_I0:
-0001f4 940e 00a5                 		call abre
-0001f6 7f2b                      		cbr botoes, (1<<botoesI0)
-0001f7 940c 0201                 		jmp default
+00020b 940e 00a5                 		call abre
+00020d 7f2b                      		cbr botoes, (1<<botoesI0)
+00020e 940c 0218                 		jmp default
                                  	main_parado_0_E2_I2_E1_I1:
-0001f9 e051                      		ldi destino, 1
-0001fa 940c 0201                 		jmp default
+000210 e051                      		ldi destino, 1
+000211 940c 0218                 		jmp default
                                  	main_parado_0_E0:
-0001fc 940e 00a5                 		call abre
-0001fe 7b2f                      		cbr botoes, (1<<botoesE0)
-0001ff 940c 0201                 		jmp default
+000213 940e 00a5                 		call abre
+000215 7b2f                      		cbr botoes, (1<<botoesE0)
+000216 940c 0218                 		jmp default
                                  	default:
-000201 ff40                      		sbrs flags, flagsPortaFechada
-000202 940c 0191                 		jmp main
+000218 ff40                      		sbrs flags, flagsPortaFechada
+000219 940c 01a8                 		jmp main
                                  		default_porta_fechada:
-000204 1751                      			cp destino, andar
-000205 f039                      			breq main_go
+00021b 1751                      			cp destino, andar
+00021c f039                      			breq main_go
                                  			default_porta_fechada_destino_diff_andar:
-000206 6042                      				sbr flags, (1<<flagsEstado)
-000207 940e 003a                 				call startTimer
-000209 940c 0191                 				jmp main
-00020b 940c 0191                 		jmp main
+00021d 6042                      				sbr flags, (1<<flagsEstado)
+00021e 940e 003a                 				call startTimer
+000220 940c 01a8                 				jmp main
+000222 940c 01a8                 		jmp main
                                  	main_go:
-00020d 940c 0191                 		jmp main
+000224 940c 01a8                 		jmp main
 
 
 RESOURCE USE INFORMATION
@@ -1558,7 +1568,7 @@ counted separately from r26..r31 here.
 x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
 r13:   0 r14:   0 r15:   0 r16:  87 r17:  13 r18:  30 r19:   7 r20:  16 
-r21:  11 r22:  16 r23:   1 r24:   1 r25:   8 r26:   0 r27:   0 r28:   0 
+r21:  11 r22:  16 r23:   1 r24:   1 r25:  24 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
 Registers used: 10 out of 35 (28.6%)
 
@@ -1573,21 +1583,21 @@ clc   :   0 clh   :   0 cli   :  17 cln   :   0 clr   :   0 cls   :   0
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   0 
 cpi   :  13 cpse  :   0 dec   :   0 eor   :   0 fmul  :   0 fmuls :   0 
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   7 inc   :   0 jmp   :  78 
-ld    :   0 ldd   :   0 ldi   :  40 lds   :   1 lpm   :   0 lsl   :   0 
+ld    :   0 ldd   :   0 ldi   :  48 lds   :   1 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   1 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   9 pop   :  15 
-push  :  15 rcall :   0 ret   :  14 reti  :   5 rjmp  :   0 rol   :   0 
+push  :  15 rcall :   0 ret   :  14 reti  :   4 rjmp  :   0 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   2 sbi   :   0 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :  15 sbrc  :  32 sbrs  :   1 sec   :   0 seh   :   0 
 sei   :  17 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
-sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  22 
+sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  30 
 sub   :   0 subi  :   2 swap  :   0 tst   :   0 wdr   :   0 
 Instructions used: 25 out of 113 (22.1%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00041e    990      0    990   32768   3.0%
+[.cseg] 0x000000 0x00044c   1036      0   1036   32768   3.2%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 
