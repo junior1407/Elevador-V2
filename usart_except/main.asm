@@ -177,7 +177,7 @@ atualiza_display:
 abre:
 	cli
 	call apaga_buzzer
-
+	call stopTimer ; ??
 	call resetTimer
 	cbr flags, (1 <<flagsPortaFechada)
 	call liga_led
@@ -486,6 +486,7 @@ reset:
 	main_parado_2_E2_I2:
 		call abre
 		cbr botoes, (1<<botoesE2)|(1<<botoesI2)
+		call abre
 		jmp default
 	main_parado_2_RESTO:
 		ldi destino, 1
