@@ -6,8 +6,7 @@
 	jmp handle_INT2
 .org OC1Aaddr
 	jmp OC1A_Interrupt
-.org 0x0028
-    jmp USART_TX_Complete
+
 .def temp = r16
 .def temp2 = r22
 .def temp3 = r24
@@ -19,32 +18,25 @@
 .equ flagsPortaFechada = 0   ; 1 - Fechada, 0 - Aberta
 .equ flagsEstado = 1 ;  0 - Parado; 1 Em movimento
 .def destino = r21
-.def contadorSerial = r23
 
 
+;Bits das Flags
 .equ botoesE0 = 6
 .equ botoesE1 = 5
 .equ botoesE2 = 4
 .equ botoesI0 = 2
 .equ botoesI1 = 1
 .equ botoesI2 = 0
-.equ B = 2
-.equ A = 3
+.equ B = 2 ;PORTD2
+.equ A = 3 ;PORTD3
 
 
-disable_transmit_interrupt:
-	cli
-	push temp
-	ldi temp, 0
-	sts UCSR0B, temp; 
-	pop temp
-	sei
-	ret
+
 enable_transmit_interrupt:
 	cli
 	push temp
-	ldi temp, (1<<TXCIE0)|(1 << TXEN0)
-	sts UCSR0B, temp; enable transmit and transmit interrupt
+	ldi temp, (1 << TXEN0)
+	sts UCSR0B, temp; enable transmit 
 	pop temp
 	sei
 	ret
@@ -53,6 +45,7 @@ startTimer:
 	cli
 	push temp
 	ldi temp, ((WGM>> 2) << WGM12)|(PRESCALE << CS10)
+	; CONFIGURA WGM13,12 para CTC,  Seta Prescale
 	sts TCCR1B, temp ;start counter
 	pop temp
 	sei
@@ -177,16 +170,16 @@ atualiza_display:
 abre:
 	cli
 	call apaga_buzzer
-	call stopTimer ; ??
+	call stopTimer 
 	call resetTimer
 	cbr flags, (1 <<flagsPortaFechada)
 	call liga_led
 	call startTimer
+	ldi contador, 0
 	sei
 	ret
 
 fecha:
-	sts UDR0, temp4
 	cli
 	sbr flags, (1 <<flagsPortaFechada)
 	call apaga_buzzer
@@ -196,10 +189,6 @@ fecha:
 	ldi contador, 0
 	sei
 	ret
-
-
-USART_TX_Complete:
-reti
 
 
 OC1A_Interrupt:
@@ -216,7 +205,6 @@ OC1A_Interrupt:
 		call stopTimer
 		call resetTimer
 		ldi contador, 0
-		
 		cpi andar, 2
 		breq tx_2
 		cpi andar, 1
@@ -261,9 +249,7 @@ handle_INT2:
 	in temp, PIND
 	cli 
 	call delay20ms
-;	call liga_buzzer
-	call delay20ms;Debouncing
-	;call delay20ms;
+	call delay20ms
 	;0 do Elevador = PD4 ; PCINT20
 	;1 do Elevador = PD5 ; PCINT21
 	;2 do Elevador = PD6 ; PCINT22
@@ -279,7 +265,6 @@ handle_INT2:
 	
 	sbrc temp,6
 	jmp botao_chamar2_in_pressionado
-	
 
 	sbrc temp,7
 	jmp botao_abrir_pressionado
@@ -323,14 +308,19 @@ handle_INT0:
 	; Chamar 2  = PB4; PCINT4
 	call delay20ms
 	call delay20ms;Debouncing
+	
 	sbrc temp,0
 	jmp botao_fechar_pressionado
+
 	sbrc temp,2
 	jmp botao_chamar0_ext_pressionado
+
 	sbrc temp,3
 	jmp botao_chamar1_ext_pressionado
+
 	sbrc temp,4
 	jmp botao_chamar2_ext_pressionado
+
 	jmp end_handle_int0
 	botao_chamar0_ext_pressionado:
 		ldi temp4, 'B'
@@ -362,14 +352,19 @@ handle_INT0:
 	reti
 reset:
 	cli
-	.equ UBRRvalue = 103
+
+	; Seta Baud Rate para 9600. Error= 0.2% De acordo com a tabela.
+	; f = 16Mhz
+	.equ UBRRvalue = 103 
+
 	;initialize USART
 	ldi temp, high (UBRRvalue) ;baud rate
 	sts UBRR0H, temp
 	ldi temp, low (UBRRvalue)
 	sts UBRR0L, temp
-	;8data, 1 stop, no parity
-	ldi temp, (3<<UCSZ00)
+
+	;8 bits data, 1 bit stop, no parity
+	ldi temp, (3<<UCSZ00) ; 0000 0110
 	sts UCSR0C, temp
 
 	call enable_transmit_interrupt
@@ -391,10 +386,12 @@ reset:
 	sts OCR1AH, temp
 	ldi temp, low(TOP)
 	sts OCR1AL, temp
+
 	ldi temp, ((WGM&0b11) << WGM10) ;lower 2 bits of WGM 
 	sts TCCR1A, temp
 	;upper 2 bits of WGM and clock select
 
+	; Comparacao no Match A 
 	lds r16, TIMSK1
 	sbr r16, 1 <<OCIE1A
 	sts TIMSK1, r16	
@@ -414,9 +411,7 @@ reset:
 	sts PCICR, temp
  
 	; Enables PCINT 4 TO 0, but 1 (the buzzer).
-	;ldi temp, 0b00011101;
-	ldi temp, 0b11111111
-	;out PCMSK0, temp
+	ldi temp, 0b00011101;
 	sts PCMSK0, temp 
 
 	; Enables PCINT 23 TO 20
@@ -431,8 +426,9 @@ reset:
 	out SPH, temp
 
 	ldi botoes, 0
-	ldi flags, 0b00000001 ; Porta fechada e Parado.
+	ldi flags, (1 << flagsPortaFechada) ; Porta fechada e Parado.
 
+	;Zerando Saídas	
 	ldi temp,0
 	sts PORTD,temp
 	sts portB,temp
@@ -441,10 +437,6 @@ reset:
 	ldi temp3,0
 	ldi temp4,0
 	ldi contador, 0
-	ldi contadorSerial,0
-
-
-
 
 	call fecha
 	call stopTimer    ; Timer 
@@ -452,9 +444,8 @@ reset:
 	ldi andar, 0        ; Andar = 0
 	ldi destino, 0
 
-
 	sei
-	call delay20ms
+
 	main:
 	call atualiza_display
 	sbrc flags, flagsEstado
@@ -484,7 +475,6 @@ reset:
 		jmp main_parado_2_RESTO
 		jmp default
 	main_parado_2_E2_I2:
-		call abre
 		cbr botoes, (1<<botoesE2)|(1<<botoesI2)
 		call abre
 		jmp default
@@ -560,7 +550,6 @@ reset:
 			default_porta_fechada_destino_diff_andar:
 				sbr flags, (1<<flagsEstado)
 				call startTimer
-				jmp main
 		jmp main
 	main_go:
 		jmp main
