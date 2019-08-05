@@ -158,7 +158,6 @@ atualiza_display:
 		sbr temp2, (1 << A)
 		sbr temp2, (1 << B)
 		jmp end_atualiza
-	; PORTD = xxxxABxx
 	end_atualiza:
 	out PORTD, temp2
 	pop temp2
