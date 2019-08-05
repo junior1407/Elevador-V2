@@ -32,7 +32,7 @@
 
 
 
-enable_transmit_interrupt:
+enable_transmit:
 	cli
 	push temp
 	ldi temp, (1 << TXEN0)
@@ -301,7 +301,7 @@ handle_INT2:
 handle_INT0:
 	push temp
 	in temp, PINB
-	cli ; TODO: Só desligar essa interrupção
+	cli ; TODO: SÃ³ desligar essa interrupÃ§Ã£o
 	; Fechar do Elevador = PB0; PCINT0
 	; Chamar 0 = PB2; PCINT2
 	; Chamar 1 = PB3; PCINT3 
@@ -367,7 +367,7 @@ reset:
 	ldi temp, (3<<UCSZ00) ; 0000 0110
 	sts UCSR0C, temp
 
-	call enable_transmit_interrupt
+	call enable_transmit
 
 	#define CLOCK 16.0e6 ;clock speed
 	.equ PRESCALE = 0b100 ;/256 prescale
@@ -428,7 +428,7 @@ reset:
 	ldi botoes, 0
 	ldi flags, (1 << flagsPortaFechada) ; Porta fechada e Parado.
 
-	;Zerando Saídas	
+	;Zerando SaÃ­das	
 	ldi temp,0
 	sts PORTD,temp
 	sts portB,temp
